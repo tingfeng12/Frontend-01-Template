@@ -1,0 +1,24 @@
+1.写一个正则表达式 匹配所有 Number 直接量
+十进制					-?(0|[1-9]|^[1-9][\d])+(\.\d+)?
+二进制（以B或b结尾）	[0|1]+[B|b]?
+八进制(以0开头的数)		^0[0-7]|^0[1-7][0-7]+
+十六进制(以0X或0x开头)	^0[xX][1-9a-fA-F][0-9a-fA-F]+|^0[xX][0-9a-fA-F]
+
+2.写一个 UTF-8 Encoding 的函数
+function encodeUtf8(text) {
+    const code = encodeURIComponent(text);
+    const bytes = [];
+    for (var i = 0; i < code.length; i++) {
+        const c = code.charAt(i);
+        if (c === '%') {
+            const hex = code.charAt(i + 1) + code.charAt(i + 2);
+            const hexVal = parseInt(hex, 16);
+            bytes.push(hexVal);
+            i += 2;
+        } else bytes.push(c.charCodeAt(0));
+    }
+    return bytes;
+}
+
+3.写一个正则表达式，匹配所有的字符串直接量，单引号和双引号
+^'[\d+|(a-z)|(A-z)| |.|"]+'$|^"[\d+|(a-z)|(A-z)| |.|']+"$
