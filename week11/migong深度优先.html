@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    .cell {
+        display:inline-block;
+        width:6px;
+        height:6px;
+        background-color: gray;
+        border-bottom:solid 1px white;
+        border-right:solid 1px white;
+        vertical-align: middle;
+    }
+    #container{
+        width:701px;
+        display: flex;
+        flex-wrap: wrap;
+        /*line-height: 6px;*/
+    }
+</style>
+<body>
+    <div id="container"></div>
+
+    <button onclick="localStorage.map = JSON.stringify(map)">save</button>
+</body>
+<script type="text/javascript">
+    // 创建一维数组并填充0
+    // var map = new Array(10001).jion(0).split('').map(s => number(s))
+
+
+// 可以使用 delete localStorage.map  进行清空
+    var map = localStorage.map ? JSON.parse(localStorage.map) : new Array(10000).fill(0)
+
+    let comtainer = document.getElementById("container")
+    for (let y = 0; y <100; y++) {
+        for (let x = 0; x <100; x++) {
+            let cell = document.createElement("div");
+            cell.classList.add("cell");
+
+            if(map[y*100 + x] === 1){
+                cell.style.backgroundColor = 'black'
+            }
+
+            cell.addEventListener('mouseover',() =>{
+                if (mouse) {
+                    if (clear) {
+                        cell.style.backgroundColor = ''
+                        map[y*100 + x] = 0;
+                    }else{
+                        cell.style.backgroundColor = 'black'
+                        map[y*100 + x] = 1;
+                    }
+                }
+            })
+
+            container.appendChild(cell)
+        }
+    }
+
+    let mouse = false;
+    let clear = false;
+
+    document.addEventListener('mousedown',e => {
+        mouse =true;
+        clear = (e.which === 3);
+    })
+
+    // document.addEventListener('mousedown',() => mouse =true)
+    document.addEventListener('mouseup',() => mouse =false)
+
+    document.addEventListener('contextmenu', e => e.preventDefault())
+
+
+// 使用sleep  将方法改写为异步
+    function sleep(t) {
+       return new Promise((resolve, reject)=> {
+           setTimeout(resolve,t);
+       })
+   }
+
+    async function findpath(map,start,end){
+        //防止污染原map
+        map = map.slice();
+
+        let stack = [start];
+
+
+        // 疑问：  1.在function 中声明function会不会引发一些问题。2.代码编写习惯如何养成。3.什么样的代码属于优秀代码
+        async function insert([x,y]){
+            if( map[100*y+x] !== 0){
+                return
+            }
+            if(x<0 || y<0 || x>=100 || y>=100){
+                return
+            }
+            map[100*y+x] =2;
+            container.children[y*100+x].style.backgroundColor = "lightgreen";
+            await sleep(1)
+            stack.push([x,y])
+        }
+
+
+        //当终点被设置为1  时他会走到最后  是否设置判断条件进行过滤。
+        
+        while(stack.length){
+            let [x,y] = stack.pop();
+            console.log(x,y)
+            if (x === end[0] && y ===end[1]){
+                return true;
+            }
+            await insert([x-1,y])
+            await insert([x+1,y])
+            await insert([x,y-1])
+            await insert([x,y+1])
+
+        }
+        return false
+        //初始化数组
+        
+    }
+
+    
+</script>
+</html>

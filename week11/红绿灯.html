@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>settimeout版红绿灯</title>
+</head>
+<style>
+    div{
+        background: gray;
+        width: 50px;
+        height: 50px;
+        border-radius: 50px;
+    }
+    .red.light{
+        background: red;
+    }
+    .yellow.light{
+        background: yellow;
+    }
+    .green.light{
+        background: green;
+    }
+</style>
+<body>
+
+    <div class="green"></div>
+    <div class="yellow"></div>
+    <div class="red"></div>
+
+    <button id="next">next</button>
+</body>
+<script>
+    function green() {
+        var lights = document.getElementsByTagName("div")
+        for(var i =0;i<3;i++){
+            lights[i].classList.remove("light")
+        }
+        document.getElementsByClassName("green")[0].classList.add('light')
+    }
+    function red() {
+        var lights = document.getElementsByTagName("div")
+        for(var i =0;i<3;i++){
+            lights[i].classList.remove("light")
+        }
+        document.getElementsByClassName("red")[0].classList.add('light')
+    }
+    function yellow() {
+        var lights = document.getElementsByTagName("div")
+        for(var i =0;i<3;i++){
+            lights[i].classList.remove("light")
+        }
+        document.getElementsByClassName("yellow")[0].classList.add('light')
+    }
+    // function go() {
+        // green()
+        //写法一
+//        setTimeout(yellow,1000);
+//        setTimeout(red,1200);
+//        setTimeout(go,1700);
+
+//        写法二  嵌套
+//        setTimeout(function () {
+//            yellow()
+//            setTimeout(function () {
+//                red()
+//                setTimeout(function () {
+//                    go()
+//                },5000)
+//            },5000)
+//        },5000)
+//    }
+
+//   } 
+    // go()
+
+
+    //     写法三  使用promise 
+    //     有若干个异步任务，需要先做任务1，如果成功后再做任务2，任何任务失败则不再继续并执行错误处理函数。要串行执行这样的异步任务，不用Promise需要写一层一层的嵌套代码。
+    //     除了串行执行若干异步任务外，Promise还可以并行执行异步任务。
+// promise执行后会执行then() 
+
+   function sleep(t) {
+       return new Promise((resolve, reject)=> {
+           setTimeout(resolve,t);
+       })
+   }
+
+// 方法运行返回值  undefined
+   // function go2(){
+   //  green()
+   // sleep(1000).then(() =>{
+   //  yellow()
+   //  return sleep(200)
+   // }).then(() =>{
+   //      red()
+   //      return sleep(500)
+   //  }).then(go2)
+   // } 
+   
+   //   方法四  async 
+   //   方法运行返回值   Promise 
+   // async function go3(){
+   //      green();
+   //      await sleep(1000);
+   //      yellow();
+   //      await sleep(500);
+   //      red();
+   //      await sleep(500);
+   //      go3()
+   // }
+   
+   // 方法四优化  while根据条件一直运行 因为条件是true所以无限重复执行
+    // async function go3(){
+    //     while(true){
+    //         green();
+    //         await sleep(1000);
+    //         yellow();
+    //         await sleep(500);
+    //         red();
+    //         await sleep(500);
+    //     }
+        
+    // }
+
+
+//  手动红绿灯    Promise  P需要大写
+    // function happen(element,eventName){
+    //     return new Promise((resolve,reject) =>{
+    //         element.addEventListener(eventName,resolve,{once:true})
+    //     })
+    // }
+
+    // async function go4(){
+    //     while(true){
+    //         green();
+    //         await happen(document.getElementById('next'),'click');
+    //         yellow();
+    //         await happen(document.getElementById('next'),'click');
+    //         red();
+    //         await happen(document.getElementById('next'),'click');
+    //     }
+        
+    // }
+
+
+// 方法五  generator
+// next()方法会执行generator的代码，然后，每次遇到yield x;就返回一个对象{value: x, done: true/false}，然后“暂停”。
+    function* go5(){
+         while(true){
+            green();
+            yield sleep(1000);
+            yellow();
+            yield sleep(200);            
+            red();
+            yield sleep(500);        
+        }
+    } 
+
+
+    function co(iterator){
+        let {value,done} = iterator.next();
+        if(done){
+            return;
+        }
+        if(value instanceof Promise){
+            value.then(() => {
+                co(iterator)
+            })
+        }
+    }
+</script>
+</html>

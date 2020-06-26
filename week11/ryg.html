@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>红绿灯问题</title>
+</head>
+<style>
+    div{
+        width: 50px;
+        height:50px;
+        border-radius: 50%;
+    }
+    .red{
+        background: red;
+    }
+    .yellow{
+        background: yellow;
+    }
+    .green{
+        background: green;
+    }
+</style>
+<body>
+    <div id="traffic-light">
+
+    </div>
+</body>
+<script>
+    function sleep(duration) {
+        return new Promise(function(resolove){
+            setTimeout(resolove,duration)
+        })
+    }
+    async function changeColor(duration,color) {
+        document.getElementById("traffic-light").style.background =color;
+        await sleep(duration)
+    }
+
+    async function main() {
+        while (true){
+            await changeColor(3000,"green");
+            await changeColor(3000,"yellow");
+            await changeColor(3000,"red");
+        }
+    }
+</script>
+</html>
