@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+ 
+
+</style>
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<body>
+	<div id="app">
+		<select v-model="thisval">
+			<option	v-for="item in ylStatusList" :key="item.key" :label="item.name" :value="item.key">
+			</option>
+		</select>
+		<select v-model="thisval">
+			<option	v-for="item in ylStatusList1" :key="item.key" :label="item.name" :value="item.key">
+			</option>
+		</select>
+	</div>
+	
+</body>
+<script>
+const ylStatusList = [
+    {key:1, name:'a'},
+    {key:2, name:'b'},
+    {key:3, name:'c'},
+  ]
+  const ylStatusList1 = [
+    {key:'1', name:'a'},
+    {key:'2', name:'b'},
+    {key:'3', name:'c'},
+  ]
+ var app = new Vue({
+  el: '#app',
+  data: {
+  	thisval:'1',
+    ylStatusList,
+    ylStatusList1,
+  }
+})
+</script>
+</html>
