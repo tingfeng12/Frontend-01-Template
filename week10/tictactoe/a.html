@@ -2,44 +2,169 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>用JavaScriptHTML实现学生基本信息及教育经历等数据的批量显示及批量获取</title>
 </head>
 <style>
  
 
 </style>
-<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
 <body>
-	<div id="app">
-		<select v-model="thisval">
-			<option	v-for="item in ylStatusList" :key="item.key" :label="item.name" :value="item.key">
-			</option>
-		</select>
-		<select v-model="thisval">
-			<option	v-for="item in ylStatusList1" :key="item.key" :label="item.name" :value="item.key">
-			</option>
-		</select>
+	<div id="content">
+		
 	</div>
-	
+	<form id="formdata">
+		<input type="" name="id" value='' hidden id='formdata_id'>
+		姓名<input type="text" name="" value='' id='formdata_name'>
+		年龄<input type="text" name="" value='' id='formdata_age'>
+		教育经历<input type="text" name="" value='' id='formdata_edu'>
+		
+	</form>
+	<button onclick="setdata()">确定</button>
+	<button onclick="adddata()">新增</button>
+
 </body>
 <script>
-const ylStatusList = [
-    {key:1, name:'a'},
-    {key:2, name:'b'},
-    {key:3, name:'c'},
-  ]
-  const ylStatusList1 = [
-    {key:'1', name:'a'},
-    {key:'2', name:'b'},
-    {key:'3', name:'c'},
-  ]
- var app = new Vue({
-  el: '#app',
-  data: {
-  	thisval:'1',
-    ylStatusList,
-    ylStatusList1,
+//获取数据
+const url = '获取json路径'
+let datalist = []
+var datahtml = ''
+function getDatas(){
+var xmlhttp;
+if (window.XMLHttpRequest)
+  {// code for IE7+, Firefox, Chrome, Opera, Safari
+  xmlhttp=new XMLHttpRequest();
   }
-})
+else
+  {// code for IE6, IE5
+  xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+xmlhttp.onreadystatechange=function()
+  {
+  if (xmlhttp.readyState==4 && xmlhttp.status==200)
+    {
+		datalist=JSON.parse(xmlhttp.responseText);
+    }
+  }
+xmlhttp.open("GET",url,true);
+xmlhttp.send();
+}
+var maxID =0;
+//假定数据格式
+datalist=[{
+		id:1,
+		name:'张三',
+		age:18,
+		edu:'14级xx大学XX专业'
+	},{
+		id:2,
+		name:'李四',
+		age:19,
+		edu:'15级xx大学XX专业'
+	},{
+		id:3,
+		name:'王五',
+		age:18,
+		edu:'15级xx大学XX专业'
+	}]
+
+function sethtml(){
+	document.getElementById('content').innerHTML =''
+	datahtml=''
+	for(let i=0,l=datalist.length;i<l;i++){
+		var id=''
+		var name = ''
+		var age=''
+		var edu=''
+		for(let key in datalist[i]){
+			if(key == 'id'){
+				id = datalist[i][key]
+				maxID =id>maxID?id:maxID;
+			}else if(key == 'name'){
+				name = datalist[i][key]
+			}else if(key == 'age'){
+				age = datalist[i][key]
+			}else if(key == 'edu'){
+				edu = datalist[i][key]
+			}
+
+		　}
+		datahtml += '<ul dataid='+id+'><li>姓名:'+name+'</li><li>年龄:'+age+'</li><li>教育经历:'+edu+'</li><button onclick="updata(id)" id='+id+'>编辑</button><button onclick="del('+id+')">删除</button></ul>'
+		
+	}
+	maxID++;
+document.getElementById('content').innerHTML = datahtml;
+}
+sethtml();
+formid =document.getElementById('formdata_id')
+formname =document.getElementById('formdata_name')
+formage =document.getElementById('formdata_age')
+formedu =document.getElementById('formdata_edu')
+function updata(id){
+	formid.value=id
+	var name = ''
+	var age=''
+	var edu=''
+	for(let i=0,l=datalist.length;i<l;i++){
+		if(id == datalist[i]['id']){
+			name = datalist[i]['name']
+			age = datalist[i]['age']
+			edu = datalist[i]['edu']
+		}
+	}
+	formname.value=name
+	formage.value=age
+	formedu.value=edu
+}
+function adddata(){
+	data={
+		id:'',
+		name:'',
+		age:'',
+		edu:''
+	}
+	console.log(datalist.length)
+
+	data['id'] = maxID
+	data['name'] =formname.value
+	data['age'] = formage.value
+	data['edu'] = formedu.value
+	datalist.push(data)
+	maxID++
+	datahtml += '<ul dataid='+data['id']+'><li>姓名:'+data['name']+'</li><li>年龄:'+data['age']+'</li><li>教育经历:'+data['edu']+'</li><button onclick="updata(id)" id='+data['id']+'>编辑</button><button onclick="del('+data['id']+')">删除</button></ul>'
+
+document.getElementById('content').innerHTML =datahtml
+	formid.value=''
+	formname.value=''
+	formage.value=''
+	formedu.value=''
+}
+function setdata(){
+	ullist = document.getElementsByTagName('ul')
+	
+	for(let i=0,l=datalist.length;i<l;i++){
+		if(formid.value == datalist[i]['id']){
+			datalist[i]['name'] =formname.value
+			datalist[i]['age'] =formage.value
+			datalist[i]['edu'] = formedu.value
+			ullist[i].innerHTML='<li>姓名:'+datalist[i]['name']+'</li><li>年龄:'+datalist[i]['age']+'</li><li>教育经历:'+datalist[i]['edu']+'</li>'
+		}
+	}
+	console.log(datalist)
+	console.log(document.getElementById('content').innerHTML)
+	formid.value=''
+	formname.value=''
+	formage.value=''
+	formedu.value=''
+}
+function del(id){
+	for(let i=0,l=datalist.length;i<l;i++){
+		if(id == datalist[i]['id']){
+			datalist.splice(i,1)
+		}
+	}
+	
+	sethtml()
+}
 </script>
 </html>
